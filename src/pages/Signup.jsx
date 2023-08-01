@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -17,7 +23,36 @@ export default function Signup() {
             alignItems: "center",
           }}
         >
-          <form>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+
+              if (!email) {
+                alert("이메일을 입력해주세요 !");
+              } else if (!password) {
+                alert("비밀번호를 입력해주세요 !");
+              } else if (!password2) {
+                alert("비밀번호를 한번 더 입력해주세요 !");
+              } else if (password !== password2) {
+                alert("비밀번호를 확인해주세요 !");
+              } else
+                try {
+                  const userCredential = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                  );
+                  console.log("user", userCredential.user);
+                } catch (error) {
+                  const errorCode = error.code;
+                  const errorMessage = error.message;
+                  console.log("error with signUp", errorCode, errorMessage);
+                }
+              // } else {
+              //   alert("비밀번호를 확인해주세요 !");
+              // }
+            }}
+          >
             <div
               style={{
                 width: "360px",
@@ -26,6 +61,13 @@ export default function Signup() {
             >
               <input
                 placeholder="이메일"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                required
                 style={{
                   width: "100%",
                   height: "40px",
@@ -46,6 +88,12 @@ export default function Signup() {
               <input
                 placeholder="비밀번호"
                 type="password"
+                value={password}
+                name="password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                required
                 style={{
                   width: "100%",
                   height: "40px",
@@ -66,6 +114,12 @@ export default function Signup() {
               <input
                 placeholder="비밀번호 확인"
                 type="password"
+                name="password2"
+                value={password2}
+                onChange={(e) => {
+                  setPassword2(e.target.value);
+                }}
+                required
                 style={{
                   width: "100%",
                   height: "40px",
@@ -103,6 +157,8 @@ export default function Signup() {
               }}
             >
               <button
+                type="button"
+                //submit속성 해제
                 onClick={() => {
                   navigate("/login");
                 }}

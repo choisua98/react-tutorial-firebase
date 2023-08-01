@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   return (
     <>
@@ -17,7 +21,28 @@ export default function Login() {
             alignItems: "center",
           }}
         >
-          <form>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!email) {
+                alert("이메일을 입력해주세요 !");
+              } else if (!password) {
+                alert("비밀번호를 입력해주세요 !");
+              } else
+                try {
+                  const userCredential = await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                  );
+                  console.log("user with signIn", userCredential.user);
+                } catch (error) {
+                  const errorCode = error.code;
+                  const errorMessage = error.message;
+                  console.log("error with signIn", errorCode, errorMessage);
+                }
+            }}
+          >
             <div
               style={{
                 width: "360px",
@@ -26,6 +51,13 @@ export default function Login() {
             >
               <input
                 placeholder="이메일"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                required
                 style={{
                   width: "100%",
                   height: "40px",
@@ -46,6 +78,12 @@ export default function Login() {
               <input
                 placeholder="비밀번호"
                 type="password"
+                value={password}
+                name="password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                required
                 style={{
                   width: "100%",
                   height: "40px",
@@ -83,6 +121,8 @@ export default function Login() {
               }}
             >
               <button
+                type="button"
+                //submit속성 해제
                 onClick={() => {
                   navigate("/signup");
                 }}

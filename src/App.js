@@ -5,8 +5,14 @@ import Create from "./pages/Create";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Edit from "./pages/Edit";
+import { useEffect } from "react";
+import { auth } from "./firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 function App() {
+  // useEffect(() => {
+  //   createUserWithEmailAndPassword(auth, "test5@gmail.com", "12341234");
+  // }, []);
   return (
     <BrowserRouter>
       <Routes>
